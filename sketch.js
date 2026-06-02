@@ -16,7 +16,8 @@ function preload() {
 function setup() {
   createCanvas(640, 480);
   video = createCapture(VIDEO);
-  //video.hide();
+  video.size(width, height);
+  video.hide();
   handPose.detectStart(video, function (results) {
     hands = results;
   });
@@ -47,7 +48,11 @@ function draw() {
         }
         circle(mirroredX, kp.y, 10);
       }
-      fill(0);
+
+      if (kp.name == 'index_finger_dip' && kp.x==0  && kp.y==600) {
+        background(0,255,0);
+      }
+      fill(255,0,0);
     }
   }
 
@@ -56,4 +61,8 @@ function draw() {
     noStroke();
     circle(point[0], point[1], 10);
   }
+}
+
+function clearDrawing() {
+  drawCoords = [];
 }
