@@ -2,14 +2,11 @@
 // I took bits of this from the ML5 website 
 // Michael Palumbo
 
-
 let video;
 let handPose;
 let hands = [];
 
-//let drawPoint = [0, 0];
 let cutoff = 0;
-
 let drawCoords = [];
 
 function preload() {
@@ -19,42 +16,38 @@ function preload() {
 function setup() {
   createCanvas(640, 480);
   video = createCapture(VIDEO);
-  video.hide();
+  //video.hide();
   handPose.detectStart(video, function (results) {
     hands = results;
   });
 }
 
 function draw() {
-  //background(0);
-  if (video) {
-    image(video, 0, 0);
-  }
   
+   if (video) {
+    push();
+    translate(width, 0);
+    scale(-1, 1);
+    image(video, 0, 0, width, height);
+    pop();
+  }
+
   for (let hand of hands) {
     for (let kp of hand.keypoints) {
-      if (kp.name == "index_finger_pip") {
-        drawPoint[0] = kp.x;
-        drawPoint[1] = kp.y;
+      let mirroredX = width - kp.x;
 
-        drawCoords.push([kp.x, kp.y]);
 
-        circle(kp.x, kp.y, 10);
-      } else if (kp.name == 'index_finger_pip') {
+      if (kp.name == 'index_finger_dip') {
         cutoff = kp.y;
       }
-      fill(0);
 
-
-      if (drawPoint[1] > cutoff) {
-        console.log('cutoff');
-
-        fill(255, 255, 255);
-        noStroke();
-        circle(drawPoint[0], drawPoint[1], 13);
-
+      if (kp.name == 'index_finger_tip') {
+        if (kp.y < cutoff) { 
+          drawCoords.push([mirroredX, kp.y]); 
+        }
+        circle(mirroredX, kp.y, 10);
       }
-
+      fill(0);
     }
   }
 
@@ -62,10 +55,5 @@ function draw() {
     fill(0, 255, 0);
     noStroke();
     circle(point[0], point[1], 10);
-  }
-  console.log(drawCoords);
-
-  if (hands.length > 1) {
-    console.log('two hands!');
   }
 }
